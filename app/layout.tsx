@@ -11,8 +11,8 @@ const IBM_Plex_Sans_Font = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Imaginify",
-  description: "AI-powered image generator",
+  title: "Araokan",
+  description: "makina 3a adham",
 };
 
 export default function RootLayout({
