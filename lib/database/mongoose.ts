@@ -13,10 +13,11 @@ interface MongooseConnection {
 }
 
 declare global {
-  var mongoose: MongooseConnection | undefined;
+  // Using 'let' instead of 'var' for global variable declarations
+  let mongoose: MongooseConnection | undefined;
 }
 
-let cached: MongooseConnection = global.mongoose || {
+const cached: MongooseConnection = global.mongoose || {
   conn: null,
   promise: null,
 };
