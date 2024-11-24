@@ -7,16 +7,25 @@ interface MongooseConnection {
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConnection = (global as any).mongoose;
+// Declare the global namespace to define a specific type for `mongoose`
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: MongooseConnection | undefined;
+}
+
+let cached: MongooseConnection = global.mongoose || {
+  conn: null,
+  promise: null,
+};
 
 if (!cached) {
-  cached = (global as any).mongoose = {
+  cached = global.mongoose = {
     conn: null,
     promise: null,
   };
 }
 
-export const connectToDatabase = async () => {
+export const connectToDatabase = async (): Promise<Mongoose> => {
   if (cached.conn) return cached.conn;
 
   if (!MONGODB_URL) throw new Error("Missing MONGODB_URL");
@@ -24,7 +33,7 @@ export const connectToDatabase = async () => {
   cached.promise =
     cached.promise ||
     mongoose.connect(MONGODB_URL, {
-      dbName: "imaginify",
+      dbName: "Araokan",
       bufferCommands: false,
     });
 
