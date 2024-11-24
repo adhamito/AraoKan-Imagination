@@ -2,16 +2,14 @@ import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URL = process.env.MONGODB_URL;
 
-if (!MONGODB_URL) {
-  throw new Error("Environment variable MONGODB_URL is not defined");
-}
-
 interface MongooseConnection {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
 }
 
+// Declare the global namespace to define a specific type for `mongoose`
 declare global {
+  // eslint-disable-next-line no-var
   var mongoose: MongooseConnection | undefined;
 }
 
@@ -20,20 +18,26 @@ let cached: MongooseConnection = global.mongoose || {
   promise: null,
 };
 
-global.mongoose = cached;
+if (!cached) {
+  cached = global.mongoose = {
+    conn: null,
+    promise: null,
+  };
+}
 
-export const connectionToDatabase = async (): Promise<Mongoose> => {
-  if (cached.conn) {
-    return cached.conn;
-  }
+export const connectToDatabase = async (): Promise<Mongoose> => {
+  if (cached.conn) return cached.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URL, {
-      dbName: "AraOkan",
+  if (!MONGODB_URL) throw new Error("Missing MONGODB_URL");
+
+  cached.promise =
+    cached.promise ||
+    mongoose.connect(MONGODB_URL, {
+      dbName: "Araokan",
       bufferCommands: false,
     });
-  }
 
   cached.conn = await cached.promise;
+
   return cached.conn;
 };
